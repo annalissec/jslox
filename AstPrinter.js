@@ -8,7 +8,7 @@ class AstPrinter {
     }
 
     visitBinaryExpr(expr) {
-        return this.parenthesize(expr.operator.lexme, expr.left, expr.right)
+        return this.parenthesize(expr.operator.lexeme, expr.left, expr.right)
     }
 
     visitGroupingExpr(expr) {
@@ -21,14 +21,12 @@ class AstPrinter {
     }
 
     visitUnaryExpr(expr) {
-        return this.parenthesize(expr.operator.lexme, expr.right)
+        return this.parenthesize(expr.operator.lexeme, expr.right)
     }
 
     parenthesize(name, ...exprs) {
         var builder = '('
         builder += name
-
-        console.log(name)
 
         exprs.forEach(value => {
 
