@@ -63,7 +63,7 @@ class Interpreter {
         if ( object == null ) { return "nil" }
 
         if (typeof(object) == "number" ) {
-            text = String(object)
+            var text = String(object)
             if (text.endsWith(".0")) {
                 text = text.substring(0, text.length() - 2)
             }
