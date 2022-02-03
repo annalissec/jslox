@@ -4,11 +4,14 @@ const { Scanner } = require('./Scanner')
 const { TokenType } = require('./TokenType')
 const { Parser } = require('./Parser')
 const { AstPrinter } = require('./AstPrinter')
+const { Interpreter } = require("./Interpreter")
 
 //process.argv gets the commandline arguments
+
 class Lox {
     constructor(){
         this.hadError = false
+        this.hadRuntimeError = false
     }
     main(){
         //the splice takes everything important
@@ -33,6 +36,7 @@ class Lox {
         exec(path)
 
         if (this.hadError) { process.exit(65) }
+        if (this.hadRuntimeError) { process.exit(70) }
 
     }
 
@@ -47,7 +51,8 @@ class Lox {
 
         if (this.hadError) { return }
 
-        console.log(new AstPrinter().print(expression))
+        const interpreter = new Interpreter(this)
+        interpreter.interpret(expression)
     }
 
     runPrompt(){
@@ -91,6 +96,12 @@ class Lox {
         else {
             this.report(token.line, " at '" + token.lexeme + "'", message)
         }
+    }
+
+    runtimeError(error) {
+        console.log(error)
+        console.log(error.message + "\n[line " + error.token.line + "]")
+        this.hadRuntimeError = true
     }
 }
 

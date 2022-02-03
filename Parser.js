@@ -14,7 +14,6 @@ class Parser {
             return this.expression()
         } catch (error) {
 
-            //console.log(this.expression())
             return null
         }
     }
