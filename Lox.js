@@ -45,8 +45,6 @@ class Lox {
         const parser = new Parser(tokens, this)
         const expression = parser.parse()
 
-        console.log(parser)
-
         if (this.hadError) { return }
 
         console.log(new AstPrinter().print(expression))
