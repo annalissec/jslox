@@ -41,18 +41,20 @@ class AstPrinter {
     }
 }
 
-function main(args) {
-    var expression = new Binary(
-        new Unary(
-            new Token(TokenType.MINUS, '-', null, 1),
-            new Literal(123)),
-        new Token(TokenType.STAR, '*', null, 1),
-        new Grouping(
-            new Literal(45.67)));
+//testing output
 
-    console.log(new AstPrinter().print(expression));
-  }
+// function main(args) {
+//     var expression = new Binary(
+//         new Unary(
+//             new Token(TokenType.MINUS, '-', null, 1),
+//             new Literal(123)),
+//         new Token(TokenType.STAR, '*', null, 1),
+//         new Grouping(
+//             new Literal(45.67)));
 
-main()
+//     console.log(new AstPrinter().print(expression));
+//   }
+
+// main()
 
 module.exports = {AstPrinter}

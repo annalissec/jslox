@@ -1,6 +1,9 @@
 // annalisse chang - jslox 
 
 const { Scanner } = require('./Scanner')
+const { TokenType } = require('./TokenType')
+const { Parser } = require('./Parser')
+const { AstPrinter } = require('./AstPrinter')
 
 //process.argv gets the commandline arguments
 class Lox {
@@ -39,7 +42,14 @@ class Lox {
         scanner.scanTokens()
         const tokens =  scanner.tokens
 
-        tokens.forEach(element => console.log(element));
+        const parser = new Parser(tokens, this)
+        const expression = parser.parse()
+
+        console.log(parser)
+
+        if (this.hadError) { return }
+
+        console.log(new AstPrinter().print(expression))
     }
 
     runPrompt(){
@@ -73,6 +83,16 @@ class Lox {
     report(line, where, message) {
         console.log("[line " + line + "] Error" + where + ": " + message)
         this.hadError = true
+    }
+
+    // in chapter 6 they add a new error function for parser
+    error ( token, message) {
+        if (token.type == TokenType.EOF) {
+            this.report(token.line, " at end", message)
+        }
+        else {
+            this.report(token.line, " at '" + token.lexeme + "'", message)
+        }
     }
 }
 
