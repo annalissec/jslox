@@ -1,70 +1,78 @@
 // annalisse chang - jslox 
 
+const { Scanner } = require('./Scanner')
+
 //process.argv gets the commandline arguments
 class Lox {
     constructor(){
-        this.hadError = false;
+        this.hadError = false
     }
     main(){
         //the splice takes everything important
         //it will include the "node" and "jslox.js" otherwise
         
-        const args= process.argv.splice(2);
+        const args= process.argv.splice(2)
 
         if (args.length > 1){
-            System.out.println("Usage: jlox [script]");
+            console.log("Usage: jlox [script]")
         }
         else if (args.length == 1){
         //I have no idea if this is what he intends but this will run stuff
-            this.runFile(args[0]);
+            this.runFile(args[0])
         }
         else{
-            this.runPrompt();
+            this.runPrompt()
         }
     }
 
     runFile(path){
-        var exec = require('child_process').exec;
-        exec(path);
+        var exec = require('child_process').exec
+        exec(path)
 
-        if (this.hadError) { process.exit(65); }
+        if (this.hadError) { process.exit(65) }
 
     }
 
     run(source){
-        this.hadError = false;
-        const tokens = source.split(" ");
+        this.hadError = false
+        const scanner = new Scanner(source, this)
+        scanner.scanTokens()
+        const tokens =  scanner.tokens
+
         tokens.forEach(element => console.log(element));
     }
 
     runPrompt(){
-        const readline = require('readline');
+        const readline = require('readline')
         const rl = readline.createInterface({
             input: process.stdin,
             output: process.stdout
-        });
+        })
+
+        var self = this
 
         var waitForUserInput = function() {
         rl.question("> ", function(input) {
-            this.run(input);
+            
+            self.run(input)
 
             // is this the right place?
-            this.hadError = false;
-            waitForUserInput();
-        });
+            self.hadError = false
+            waitForUserInput()
+        })
         }
 
-        waitForUserInput();
+        waitForUserInput()
 
     }
 
     error (line, message) {
-        this.report(line, "", message);
+        this.report(line, "", message)
     }
 
     report(line, where, message) {
-        console.log("[line " + line + "] Error" + where + ": " + message);
-        this.hadError = true;
+        console.log("[line " + line + "] Error" + where + ": " + message)
+        this.hadError = true
     }
 }
 

@@ -1,5 +1,4 @@
 const {TokenType} = require('./TokenType')
-const {Lox} = require('./Lox')
 const { Token } = require('./Token')
 
 const keywords = {
@@ -23,8 +22,8 @@ const keywords = {
 
 class Scanner {
 
-    constructor (source) {
-        this.Lox = new Lox()
+    constructor (source, Lox) {
+        this.Lox = Lox
         this.source = source
         this.tokens = []
     
@@ -34,12 +33,12 @@ class Scanner {
     }
 
     scanTokens() {
-        while (!isAtEnd()) {
-            this.start = current;
-            this.scanTokens();
+        while (!this.isAtEnd()) {
+            this.start = this.current;
+            this.scanToken();
         }
     
-        this.tokens.push(Token(EOF, "", null, this.line));
+        this.tokens.push(new Token(TokenType.EOF, "", null, this.line));
         return this.tokens;
     }
 
@@ -48,7 +47,8 @@ class Scanner {
       }
     
     advance () {
-        return this.source[this.current += 1]
+        this.current++;
+        return this.source[this.current - 1]
     }
 
     addToken (type, literal = null ) {
@@ -58,7 +58,7 @@ class Scanner {
 
     scanToken () {
 
-        const c = this.advance();
+        const c = this.advance()
 
         switch (c) {
             case '(' : this.addToken(TokenType.LEFT_PAREN); break
@@ -121,7 +121,7 @@ class Scanner {
 
         const text = this.source.substring(this.start, this.current)
 
-        const type;
+        var type = null
 
         if (text in keywords ) {
             type = keywords[text]
@@ -148,8 +148,8 @@ class Scanner {
     }
 
     string() {
-        while (this.peek() != '"' && !this.isAtEnd()) {
-            if (this.peek() == '\n') line++
+        while (this.peek() !== '"' && !this.isAtEnd()) {
+            if (this.peek() == '\n') this.line++
             this.advance()
         }
 
@@ -168,7 +168,8 @@ class Scanner {
         if (this.isAtEnd()) {
             return false
         }
-        if (this.source[this.current] != expected) { return false }
+        if (this.source[this.current] !== expected) { return false }
+        
         this.current++
 
         return true
@@ -180,7 +181,7 @@ class Scanner {
     }
 
     isDigit (c) {
-        return c >= '0' && c <= '9'
+        return c >= 0 && c <= 9
     }
 
     peekNext() {
@@ -200,3 +201,4 @@ class Scanner {
     }
 
 }
+module.exports = {Scanner}

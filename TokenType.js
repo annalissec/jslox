@@ -36,7 +36,7 @@ const TokenType = {
     FOR: 'for',
     IF: 'if',
     NIL: 'nil',
-    OR: 'ol',
+    OR: 'or',
 
     PRINT: 'print',
     RETURN: 'return',
