@@ -185,7 +185,7 @@ class Scanner {
     }
 
     peekNext() {
-        if (this.current + 1 >= this.source.length()) {
+        if (this.current + 1 >= this.source.length) {
             return '\0'
         }
 
