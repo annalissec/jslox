@@ -1,6 +1,7 @@
-const {Expr, Binary, Unary, Literal, Grouping } = require('./Expr')
+const { Expr, Binary, Unary, Literal, Grouping } = require('./Expr')
 const { Token } = require('./Token')
 const { TokenType } = require('./TokenType')
+const { Block, Expression, Function, If, Print, Return, Var, While } = require('./Stmt')
 
 class Parser {
     constructor(tokens, Lox ) {
@@ -10,16 +11,35 @@ class Parser {
     }
 
     parse() {
-        try {
-            return this.expression()
-        } catch (error) {
-
-            return null
+        var statements = []
+        while (this.isAtEnd()) {
+            this.statements.push(this.statement())
         }
+        
+        return statements
     }
 
     expression() {
         return this.equality()
+    }
+
+    statement() {
+        if (this.match(TokenType.PRINT)) {
+            return this.printStatement()
+        }
+        return this.expressionStatement()
+    }
+
+    printStatement() {
+        var value = this.expression()
+        this.consume(TokenType.SEMICOLON, "Expect ';' after value.")
+        return new Print(value)
+    }
+
+    expressionStatement() {
+        var expr = this.expression()
+        this.consume(TokenType.SEMICOLON, "Expect ';' after expression.")
+        return new Expression(expr)
     }
 
     equality() {

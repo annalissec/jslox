@@ -1,16 +1,16 @@
 const { TokenType } = require("./TokenType")
 const {RuntimeError} = require('./RuntimeError')
 
-
 class Interpreter {
     constructor(Lox) {
         this.Lox = Lox
     }
 
-    interpret(expression) {
+    interpret(statements) {
         try {
-            var value = this.evaluate(expression)
-            console.log(this.stringify(value))
+            statements.forEach(element => {
+                this.execute(element)
+            })
         } catch (error) {
             this.Lox.runtimeError(error)
         }
@@ -78,6 +78,21 @@ class Interpreter {
 
     evaluate(expr) {
         return expr.accept(this)
+    }
+
+    execute (stmt) {
+        stmt.accept(this)
+    }
+
+    visitExpressionStmt(stmt) {
+        this.evaluate(stmt.expression)
+        return null
+    }
+
+    visitPrintStmt(stmt) {
+        var value = this.evaluate(stmt.expression) 
+        console.log(this.stringify(value))
+        return null
     }
 
     visitBinaryExpr(expr) {
