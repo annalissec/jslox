@@ -1,16 +1,18 @@
 const { TokenType } = require("./TokenType")
 const {RuntimeError} = require('./RuntimeError')
-
+const { Environment } = require("./Environment")
 
 class Interpreter {
     constructor(Lox) {
         this.Lox = Lox
+        this.environment = new Environment()
     }
 
-    interpret(expression) {
+    interpret(statements) {
         try {
-            var value = this.evaluate(expression)
-            console.log(this.stringify(value))
+            statements.forEach(element => {
+                this.execute(element)
+            })
         } catch (error) {
             this.Lox.runtimeError(error)
         }
@@ -30,6 +32,10 @@ class Interpreter {
                 return -(parseFloat(right))
         }
         return null
+    }
+
+    visitVariableExpr(expr) {
+        return this.environment.get(expr.name)
     }
 
     checkNumberOperand( operator, operand ) {
@@ -78,6 +84,56 @@ class Interpreter {
 
     evaluate(expr) {
         return expr.accept(this)
+    }
+
+    execute (stmt) {
+        stmt.accept(this)
+    }
+
+    executeBlock(statements, environment) {
+        var previous = environment
+
+        try {
+            this.environment = environment
+
+            statements.forEach(statment => {
+                this.execute(statement)
+            })
+        } finally {
+            this.environment = previous
+        }
+    }
+
+    visitBlockStmt(stmt) {
+        this.executeBlock(stmt.statements, new Environment(this.environment))
+        return null
+    }
+
+    visitExpressionStmt(stmt) {
+        this.evaluate(stmt.expression)
+        return null
+    }
+
+    visitPrintStmt(stmt) {
+        var value = this.evaluate(stmt.expression) 
+        console.log(this.stringify(value))
+        return null
+    }
+
+    visitVarStmt(stmt) {
+        var value = null
+        if (stmt.initializer != null) {
+            value = this.evaluate(stmt.initializer)
+        }
+
+        this.environment.define(stmt.name.lexeme, value)
+        return null
+    }
+
+    visitAssignExpr(expr) {
+        var value = this.evaluate(expr.value)
+        this.environment.assign(expr.name, value)
+        return value
     }
 
     visitBinaryExpr(expr) {

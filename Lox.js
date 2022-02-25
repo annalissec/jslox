@@ -47,12 +47,12 @@ class Lox {
         const tokens =  scanner.tokens
 
         const parser = new Parser(tokens, this)
-        const expression = parser.parse()
+        const statements = parser.parse()
 
         if (this.hadError) { return }
 
         const interpreter = new Interpreter(this)
-        interpreter.interpret(expression)
+        interpreter.interpret(statements)
     }
 
     runPrompt(){
