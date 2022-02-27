@@ -12,8 +12,8 @@ class Parser {
 
     parse() {
         var statements = []
-        while (this.isAtEnd()) {
-            this.statements.push(this.declaration())
+        while (!this.isAtEnd()) {
+            statements.push(this.declaration())
         }
         
         return statements

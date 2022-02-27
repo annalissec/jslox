@@ -10,8 +10,8 @@ class Interpreter {
 
     interpret(statements) {
         try {
-            statements.forEach(element => {
-                this.execute(element)
+            statements.forEach(statement => {
+                this.execute(statement)
             })
         } catch (error) {
             this.Lox.runtimeError(error)

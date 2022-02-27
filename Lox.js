@@ -49,9 +49,10 @@ class Lox {
         const parser = new Parser(tokens, this)
         const statements = parser.parse()
 
+        const interpreter = new Interpreter(this)
+        
         if (this.hadError) { return }
 
-        const interpreter = new Interpreter(this)
         interpreter.interpret(statements)
     }
 

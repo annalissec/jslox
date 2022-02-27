@@ -47,12 +47,14 @@ class Scanner {
       }
     
     advance () {
-        this.current++;
-        return this.source[this.current - 1]
+        this.current++
+        return this.source.charAt(this.current - 1)
     }
 
     addToken (type, literal = null ) {
-        const text = this.source.substring(this.start, this.current)
+        var text = this.source.substring(this.start, this.current)
+        text = text.replace(' ', "")
+
         this.tokens.push(new Token(type, text, literal, this.line))
     }
 
@@ -119,18 +121,13 @@ class Scanner {
             this.advance()
         }
 
-        const text = this.source.substring(this.start, this.current)
+        var text = this.source.substring(this.start, this.current)
 
-        var type = null
+        text = text.replace(' ', "")
 
-        if (text in keywords ) {
-            type = keywords[text]
-        }
-        else {
-            type = TokenType.IDENTIFIER
-        }
+        var type = text in keywords ? keywords[text] : TokenType.IDENTIFIER
 
-        this.addToken(type)
+        this.addToken(type, )
     }
 
     number() {
@@ -181,7 +178,7 @@ class Scanner {
     }
 
     isDigit (c) {
-        return c >= 0 && c <= 9
+        return c >= '0' && c <= '9'
     }
 
     peekNext() {

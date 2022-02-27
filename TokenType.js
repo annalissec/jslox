@@ -8,7 +8,7 @@ const TokenType = {
     DOT: '.', 
     MINUS: '-', 
     PLUS: '+', 
-    SEMICOLON: ':', 
+    SEMICOLON: ';', 
     SLASH: '/', 
     STAR: '*',
 
