@@ -6,6 +6,8 @@ const { Parser } = require('./Parser')
 const { AstPrinter } = require('./AstPrinter')
 const { Interpreter } = require("./Interpreter")
 
+const fs = require('fs')
+
 //process.argv gets the commandline arguments
 
 class Lox {
@@ -32,11 +34,11 @@ class Lox {
     }
 
     runFile(path){
-        var exec = require('child_process').exec
-        exec(path)
-
-        if (this.hadError) { process.exit(65) }
-        if (this.hadRuntimeError) { process.exit(70) }
+        const source = fs.readFileSync(path).toString()
+        this.run(source)
+    
+        if (this.hadError) process.exit(65)
+        if (this.hadRuntimeError) process.exit(70)
 
     }
 

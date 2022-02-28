@@ -7,7 +7,7 @@ class Environment {
     }
 
     get(name) {
-        if (this.values.containsKey(name.lexeme)) {
+        if (name.lexeme in this.values) {
             return this.values[name.lexeme]
         }
 

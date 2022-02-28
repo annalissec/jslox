@@ -12,6 +12,7 @@ class Parser {
 
     parse() {
         var statements = []
+
         while (!this.isAtEnd()) {
             statements.push(this.declaration())
         }
@@ -24,7 +25,7 @@ class Parser {
     }
 
     declaration() {
-        try{
+        try {
             if (this.match(TokenType.VAR)) {
                 return this.varDeclaration()
             }
@@ -36,6 +37,9 @@ class Parser {
     }
 
     statement() {
+        if (this.match(TokenType.IF)) {
+            return this.ifStatement()
+        }
         if (this.match(TokenType.PRINT)) {
             return this.printStatement()
         }
@@ -43,6 +47,21 @@ class Parser {
             return new Block(this.block())
         }
         return this.expressionStatement()
+    }
+
+    ifStatement() {
+        this.consume(TokenType.LEFT_PAREN, "Expect '(' after 'if'.")
+        var condition = this.expression()
+        this.consume(TokenType.RIGHT_PAREN, "Expect ')' after if condition.")
+
+        var thenBranch = this.statement()
+        var elseBranch = null
+
+        if (this.match(TokenType.ELSE)) {
+            elseBranch = this.statement()
+        }
+
+        return new If(condition, thenBranch, elseBranch)
     }
 
     printStatement() {
@@ -201,7 +220,7 @@ class Parser {
     }
 
     isAtEnd() {
-        return this.peek() == TokenType.EOF
+        return this.peek().type === TokenType.EOF
     }
 
     peek() {
@@ -239,7 +258,6 @@ class Parser {
         }
     }
 
-    //ParseError()
 }
 
 class ParseError extends Error {

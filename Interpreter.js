@@ -96,7 +96,7 @@ class Interpreter {
         try {
             this.environment = environment
 
-            statements.forEach(statment => {
+            statements.forEach(statement => {
                 this.execute(statement)
             })
         } finally {
@@ -111,6 +111,17 @@ class Interpreter {
 
     visitExpressionStmt(stmt) {
         this.evaluate(stmt.expression)
+        return null
+    }
+
+    visistIfStmt(stmt) {
+        if (this.isTruthy(this.evaluate(stmt.condition))) {
+            this.execute(stmt.thenBranch)
+        }
+        else if ( stmt.elseBranch != null) {
+            this.execute(stmt.elseBranch)
+        }
+
         return null
     }
 

@@ -127,7 +127,7 @@ class Scanner {
 
         var type = text in keywords ? keywords[text] : TokenType.IDENTIFIER
 
-        this.addToken(type, )
+        this.addToken(type)
     }
 
     number() {

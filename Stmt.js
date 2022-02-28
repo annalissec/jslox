@@ -1,6 +1,4 @@
-class Stmt {
-    accept (visitor) {}
-  }
+class Stmt { }
   
 class Block extends Stmt {
     constructor (statements) {
