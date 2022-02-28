@@ -110,7 +110,7 @@ class Interpreter {
     }
 
     visitExpressionStmt(stmt) {
-        this.evaluate(stmt.expression)
+        console.log(this.stringify(this.evaluate(stmt.expression)))
         return null
     }
 
