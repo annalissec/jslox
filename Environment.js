@@ -19,7 +19,7 @@ class Environment {
     }
 
     assign(name, value) {
-        if (this.values.containsKey(name.lexeme)) {
+        if (name.lexeme in this.values) {
             this.values[name.lexeme] = value
             return 
         }

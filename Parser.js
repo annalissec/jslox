@@ -1,4 +1,4 @@
-const { Assign, Expr, Binary, Unary, Literal, Grouping, Variable } = require('./Expr')
+const { Assign, Expr, Binary, Unary, Logical, Literal, Grouping, Variable } = require('./Expr')
 const { Token } = require('./Token')
 const { TokenType } = require('./TokenType')
 const { Block, Expression, Function, If, Print, Return, Var, While } = require('./Stmt')
@@ -37,16 +37,65 @@ class Parser {
     }
 
     statement() {
+        if (this.match(TokenType.FOR)) {
+            return this.forStatement()
+        }
         if (this.match(TokenType.IF)) {
             return this.ifStatement()
         }
         if (this.match(TokenType.PRINT)) {
             return this.printStatement()
         }
+        if (this.match(TokenType.WHILE)) {
+            return this.whileStatement()
+        }
         if (this.match(TokenType.LEFT_BRACE)) {
             return new Block(this.block())
         }
         return this.expressionStatement()
+    }
+
+    forStatement() {
+        this.consume(TokenType.LEFT_PAREN, "Expect '(' after 'for'.")
+
+        var initializer
+
+        if (this.match(TokenType.SEMICOLON)) {
+            initializer = null
+        } else if (this.match(TokenType.VAR)) {
+            initializer = this.varDeclaration()
+        } else {
+            initializer = this.expressionStatement()
+        }
+
+        var condition = null
+        if (!this.check(TokenType.SEMICOLON)) {
+            condition = this.expression()
+        }
+        this.consume(TokenType.SEMICOLON, "Expect ';' after loop condition.")
+        
+        var increment = null
+        if (!this.check(TokenType.RIGHT_PAREN)) {
+            increment = this.expression()
+        }
+        this.consume(TokenType.RIGHT_PAREN, "Expect ')' after for clauses.")
+        var body = this.statement()
+
+        if (increment != null) {
+            body = new Block([body, new Expression(increment)])
+        }
+
+        if (condition == null) {
+            condition = new Literal(true)
+        }
+
+        body = new While(condition, body)
+
+        if (initializer != null) {
+            body = new Block([initializer, body])
+        }
+
+        return body
     }
 
     ifStatement() {
@@ -82,6 +131,15 @@ class Parser {
         return new Var(name, initializer)
     }
 
+    whileStatement() {
+        this.consume(TokenType.LEFT_PAREN, "Expect '(' after 'while'.")
+        var condition = this.expression()
+        this.consume(TokenType.RIGHT_PAREN, "Expect ')' after condition.")
+        var body = this.statement()
+
+        return new While(condition, body)
+    }
+
     expressionStatement() {
         var expr = this.expression()
         this.consume(TokenType.SEMICOLON, "Expect ';' after expression.")
@@ -100,7 +158,7 @@ class Parser {
     }
 
     assignment() {
-        var expr = this.equality()
+        var expr = this.or()
 
         if (this.match(TokenType.EQUAL)) {
             var equals = this.previous()
@@ -114,6 +172,29 @@ class Parser {
             this.error(equals, "Invalid assignment target.")
         }
 
+        return expr
+    }
+
+    or() {
+        var expr = this.and()
+
+        while (this.match(TokenType.OR)) {
+            var operator = this.previous()
+            var right = this.and()
+            expr = new Logical(expr, operator, right)
+        }
+        return expr
+    }
+
+    and() {
+        var expr = this.equality()
+
+        while (this.match(TokenType.AND)) {
+            var operator = this.previous()
+            var right = this.equality()
+            expr = new Logical(expr, operator, right)
+        }
+        
         return expr
     }
 

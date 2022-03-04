@@ -46,6 +46,19 @@ class Assign extends Expr {
       return visitor.visitLiteralExpr(this)
     }
   }
+
+  class Logical extends Expr {
+    constructor (left, operator, right) {
+      super()
+      this.left = left
+      this.operator = operator
+      this.right = right
+    }
+  
+    accept (visitor) {
+      return visitor.visitLogicalExpr(this)
+    }
+  }
   
   class Unary extends Expr {
     constructor (operator, right) {
@@ -71,4 +84,4 @@ class Assign extends Expr {
   }
   
   
-module.exports = { Assign, Expr, Binary, Grouping, Literal, Unary, Variable }
+module.exports = { Assign, Expr, Binary, Grouping, Literal, Logical, Unary, Variable }

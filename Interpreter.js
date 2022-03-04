@@ -22,6 +22,21 @@ class Interpreter {
         return expr.value
     }
 
+    visitLogicalExpr(expr) {
+        var left = this.evaluate(expr.left)
+
+        if (expr.operator.type == TokenType.OR) {
+            if (this.isTruthy(left)) {
+                return left
+            }
+        } else {
+            if (!this.isTruthy(left)) {
+                return left
+            }
+        }
+        return this.evaluate(expr.right)
+    }
+
     visitUnaryExpr(expr) {
         var right = this.evaluate(expr.right)
 
@@ -114,7 +129,7 @@ class Interpreter {
         return null
     }
 
-    visistIfStmt(stmt) {
+    visitIfStmt(stmt) {
         if (this.isTruthy(this.evaluate(stmt.condition))) {
             this.execute(stmt.thenBranch)
         }
@@ -138,6 +153,13 @@ class Interpreter {
         }
 
         this.environment.define(stmt.name.lexeme, value)
+        return null
+    }
+
+    visitWhileStmt(stmt) {
+        while (this.isTruthy(this.evaluate(stmt.condition))) {
+            this.execute(stmt.body)
+        }
         return null
     }
 
