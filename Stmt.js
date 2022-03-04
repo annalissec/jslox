@@ -1,4 +1,4 @@
-class Stmt { }
+class Stmt {}
   
 class Block extends Stmt {
     constructor (statements) {
