@@ -106,7 +106,7 @@ class Interpreter {
     }
 
     executeBlock(statements, environment) {
-        var previous = environment
+        var previous = this.environment
 
         try {
             this.environment = environment
