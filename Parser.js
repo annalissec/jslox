@@ -94,7 +94,7 @@ class Parser {
         if (initializer != null) {
             body = new Block([initializer, body])
         }
-
+        
         return body
     }
 
