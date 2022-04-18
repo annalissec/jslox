@@ -1,11 +1,15 @@
 const { TokenType } = require("./TokenType")
 const {RuntimeError} = require('./RuntimeError')
 const { Environment } = require("./Environment")
+const { LoxCallable } = require("./LoxCallable")
 
 class Interpreter {
     constructor(Lox) {
         this.Lox = Lox
-        this.environment = new Environment()
+        this.globals = new Environment()
+        this.environment = this.globals
+
+        this.globals.define("clock", new LoxCallable())
     }
 
     interpret(statements) {
@@ -220,6 +224,29 @@ class Interpreter {
         }
 
         return null
+    }
+
+    visitCallExpr(expr) {
+        var callee = this.evaluate(expr.callee)
+
+        var args = []
+        for (var arg in args) {
+            args.push(this.evaluate(arg))
+        }
+
+        if (!(callee instanceof LoxCallable)) {
+            throw new RuntimeError(expr.paren, "Can only call functions and classes.")
+        }
+
+        var func = callee
+
+        if (args.length != func.arity()) {
+            throw new RuntimeError(expr.paren, "Expected " +
+            func.arity() + " arguments but got " +
+            args.size() + ".")
+        }
+
+        return func.call(this, args)
     }
 
     // helper functions

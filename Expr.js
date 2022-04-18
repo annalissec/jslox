@@ -24,6 +24,19 @@ class Assign extends Expr {
       return visitor.visitBinaryExpr(this)
     }
   }
+
+  class Call extends Expr {
+    constructor (callee, paren, args) {
+      super()
+      this.callee = callee
+      this.paren = paren
+      this.args = args
+    }
+  
+    accept (visitor) {
+      return visitor.visitCallExpr(this)
+    }
+  }
   
   class Grouping extends Expr {
     constructor (expression) {
@@ -84,4 +97,4 @@ class Assign extends Expr {
   }
   
   
-module.exports = { Assign, Expr, Binary, Grouping, Literal, Logical, Unary, Variable }
+module.exports = { Assign, Expr, Binary, Call, Grouping, Literal, Logical, Unary, Variable }
