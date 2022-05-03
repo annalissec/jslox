@@ -37,8 +37,8 @@ class Lox {
         const source = fs.readFileSync(path).toString()
         this.run(source)
     
-        if (this.hadError) process.exit(65)
-        if (this.hadRuntimeError) process.exit(70)
+        if (this.hadError) process.exit(0)
+        if (this.hadRuntimeError) process.exit(0)
 
     }
 
