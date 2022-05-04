@@ -1,7 +1,7 @@
 const { Environment } = require("./Environment")
 
 class LoxCallable {
-    call(interpreter, args) {}
+    //call(interpreter, args) {}
     arity() { return this.arity }
 }
 
