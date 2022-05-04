@@ -1,7 +1,7 @@
 const { TokenType } = require("./TokenType")
 const {RuntimeError} = require('./RuntimeError')
 const { Environment } = require("./Environment")
-const { LoxCallable } = require("./LoxCallable")
+const { LoxCallable, NativeFunction } = require("./LoxCallable")
 
 class Interpreter {
     constructor(Lox) {
@@ -9,7 +9,9 @@ class Interpreter {
         this.globals = new Environment()
         this.environment = this.globals
 
-        this.globals.define("clock", new LoxCallable())
+        this.globals.define("clock", new NativeFunction(0, () => {
+            return Date.now() / 1000.0
+        }))
     }
 
     interpret(statements) {
@@ -242,8 +244,8 @@ class Interpreter {
 
         if (args.length != func.arity()) {
             throw new RuntimeError(expr.paren, "Expected " +
-            func.arity() + " arguments but got " +
-            args.size() + ".")
+                func.arity() + " arguments but got " +
+                args.size() + ".")
         }
 
         return func.call(this, args)
