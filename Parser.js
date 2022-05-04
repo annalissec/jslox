@@ -26,6 +26,9 @@ class Parser {
 
     declaration() {
         try {
+            if (this.match(TokenType.FUN)) {
+                return this.function("function")
+            }
             if (this.match(TokenType.VAR)) {
                 return this.varDeclaration()
             }
@@ -36,6 +39,7 @@ class Parser {
         }
     }
 
+    //TAG: statement
     statement() {
         if (this.match(TokenType.FOR)) {
             return this.forStatement()
@@ -45,6 +49,9 @@ class Parser {
         }
         if (this.match(TokenType.PRINT)) {
             return this.printStatement()
+        }
+        if (this.match(TokenType.RETURN)) {
+            return this.returnStatment()
         }
         if (this.match(TokenType.WHILE)) {
             return this.whileStatement()
@@ -119,6 +126,19 @@ class Parser {
         return new Print(value)
     }
 
+    returnStatment() {
+        let keyword = this.previous()
+
+        let value = null
+
+        if (!this.check(TokenType.SEMICOLON)) {
+            value = this.expression()
+        }
+
+        this.consume(TokenType.SEMICOLON, "Expect ';' after return value.")
+        return new Return(keyword, value)
+    }
+
     varDeclaration() {
         var name = this.consume(TokenType.IDENTIFIER, "Expect variable name.")
 
@@ -144,6 +164,33 @@ class Parser {
         var expr = this.expression()
         this.consume(TokenType.SEMICOLON, "Expect ';' after expression.")
         return new Expression(expr)
+    }
+
+    function(kind) {
+        let name = this.consume(TokenType.IDENTIFIER, "Expect " + kind + " name.")
+
+        this.consume(TokenType.LEFT_PAREN,  "Expect '(' after " + kind + " name.")
+
+        let parameters = []
+
+        if (!this.check(TokenType.RIGHT_PAREN)) {
+            do {
+                if (parameters.length >= 255) {
+                    this.error(this.peek(), "Can't have more than 255 parameters.")
+                }
+                //TODO: pass in function? add a match 
+                parameters.push(
+                    this.consume(TokenType.IDENTIFIER, "Expect parameter name.")
+                )
+            } while (this.match(TokenType.COMMA))
+        }
+        this.consume(TokenType.RIGHT_PAREN, "Expect ')' after parameters.")
+
+        this.consume(TokenType.LEFT_BRACE, "Expect '{' before " + kind + " body.")
+
+        let body = this.block()
+
+        return new Function(name, parameters, body)
     }
 
     block() {

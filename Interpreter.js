@@ -1,7 +1,8 @@
 const { TokenType } = require("./TokenType")
 const {RuntimeError} = require('./RuntimeError')
 const { Environment } = require("./Environment")
-const { LoxCallable, NativeFunction } = require("./LoxCallable")
+const { LoxCallable, NativeFunction, LoxFunction } = require("./LoxCallable")
+const { Return } = require("./Stmt")
 
 class Interpreter {
     constructor(Lox) {
@@ -135,6 +136,12 @@ class Interpreter {
         return null
     }
 
+    visitFunctionStmt(stmt) { 
+        let func = new LoxFunction(stmt, this.environment)
+        this.environment.define(stmt.name.lexeme, func)
+        return null
+    }
+
     visitIfStmt(stmt) {
         if (this.isTruthy(this.evaluate(stmt.condition))) {
             this.execute(stmt.thenBranch)
@@ -150,6 +157,15 @@ class Interpreter {
         var value = this.evaluate(stmt.expression) 
         console.log(this.stringify(value))
         return null
+    }
+
+    visitReturnStmt(stmt) {
+        let value = null
+        if (stmt.value != null) {
+            value = this.evaluate(stmt.value)
+        }
+
+        throw new Return(value)
     }
 
     visitVarStmt(stmt) {
@@ -231,10 +247,11 @@ class Interpreter {
     visitCallExpr(expr) {
         var callee = this.evaluate(expr.callee)
 
-        var args = []
-        for (var arg in args) {
-            args.push(this.evaluate(arg))
-        }
+        //HACK: https://github.com/brandly/lox.js/blob/master/src/Interpreter.js
+        const args = expr.args.map(arg => this.evaluate(arg))
+        // for (var arg of expr.args) {
+        //     args.push(this.evaluate(arg))
+        // }
 
         if (!(callee instanceof LoxCallable)) {
             throw new RuntimeError(expr.paren, "Can only call functions and classes.")
@@ -245,7 +262,7 @@ class Interpreter {
         if (args.length != func.arity()) {
             throw new RuntimeError(expr.paren, "Expected " +
                 func.arity() + " arguments but got " +
-                args.size() + ".")
+                args.length + ".")
         }
 
         return func.call(this, args)

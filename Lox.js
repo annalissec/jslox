@@ -25,7 +25,6 @@ class Lox {
             console.log("Usage: jlox [script]")
         }
         else if (args.length == 1){
-        //I have no idea if this is what he intends but this will run stuff
             this.runFile(args[0])
         }
         else{
